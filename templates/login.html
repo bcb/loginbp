@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <!-- jquery mobile -->
+  <link rel="stylesheet" href="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+  {% assets "css_login" %} <link rel="stylesheet" href="{{ ASSET_URL }}" /> {% endassets %}
+  {% assets "js_login" %} <script type="text/javascript" src="{{ ASSET_URL }}"></script> {% endassets %}
+
+</head>
+<body>
+  <div data-role="page" data-theme="a" data-url="{{ url }}">
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul id="flashes" style="display: none">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <div data-role="main" class="ui-content">
+
+      <h1 id="page_heading">Login</h1>
+
+      {% if form.errors %}
+        <ul id="errors">
+          {% for field, errors in form.errors.items() %}
+            <li>{{ form[field].label }} {{ ', '.join(errors) }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <form id="login_form" method="post" class="ui-body ui-body-a ui-corner-all" data-ajax="false">
+
+        {{ form.hidden_tag() }}
+
+        <div class="ui-field-contain">
+
+          <div data-role="fieldcontain">
+            {{ form.username.label }}
+            {{ form.username }}
+          </div>
+
+          <div data-role="fieldcontain">
+            {{ form.password.label }}
+            {{ form.password }}
+          </div>
+
+        </div>
+
+        <input type="submit" name="submit" value="Login" />
+
+      </form>
+
+    </div>
+
+  </div>
+</body>
+</html>
