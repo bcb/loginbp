@@ -16,10 +16,14 @@ from jsonrpcclient import Server
 from jsonrpcclient.exceptions import ReceivedErrorResponse
 
 
+# Logging
 logger = logging.getLogger(__name__)
+# Instantiate the blueprint
 loginbp = Blueprint('loginbp', __name__, template_folder='templates', \
     static_folder='static')
+# Flask-Login
 login_manager = LoginManager()
+# Users API for retrieving user data
 users_api = Server('http://localhost/api/users', auth=('admin', 'heiwah4i'))
 
 
