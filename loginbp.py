@@ -45,7 +45,7 @@ def on_load(state):
         # RoleNeeds
         if hasattr(current_user, 'roles'):
             for role in current_user.roles:
-                identity.provides.add(RoleNeed(role.name))
+                identity.provides.add(RoleNeed(role))
     # Webassets
     assets = state.app.assets
     assets.append_path(dirname(__file__)+'/static')
@@ -61,9 +61,10 @@ class User(UserMixin):
     """Instantiated when login was successful, populated with data returned
     from the api, then passed to Flask-Login methods.
     """
-    def __init__(self, user_id, username):
+    def __init__(self, user_id, username, roles):
         self.user_id = user_id
         self.username = username
+        self.roles = roles
 
     def get_id(self):
         return self.user_id
@@ -73,7 +74,7 @@ class User(UserMixin):
 def load_user(user_id):
     """Flask-Login: Load user"""
     user_dict = users_api.get_id(user_id, response=True)
-    user = User(user_id, user_dict['username'])
+    user = User(user_id, user_dict['username'], user_dict['roles'])
     return user
 
 
@@ -100,7 +101,7 @@ def login():
             logger.error(str(e))
             flash('Sorry, but you could not log in')
         else:
-            user = User(user_dict['id'], username)
+            user = User(user_dict['id'], username, user_dict['roles'])
             if login_user(user, remember=True):
                 # Flask-Principal
                 identity_changed.send(current_app._get_current_object(), \
