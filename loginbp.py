@@ -117,7 +117,6 @@ def login():
 
 
 @loginbp.route('/logout')
-@login_required
 def logout():
     """Logout route"""
     # Flask-Login
