@@ -7,11 +7,16 @@
 
   <!-- jquery mobile -->
   <link rel="stylesheet" href="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-  <script src="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
-  {% assets "css_login" %} <link rel="stylesheet" href="{{ ASSET_URL }}" /> {% endassets %}
-  {% assets "js_login" %} <script type="text/javascript" src="{{ ASSET_URL }}"></script> {% endassets %}
+  <!-- css -->
+  {% assets
+    filters="cssmin",
+    output="packed-login.css",
+    "js/jQuery-Notify-bar/css/jquery.notifyBar.css",
+    "css/login.css"
+  %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}" />
+  {% endassets %}
 
 </head>
 <body>
@@ -64,5 +69,19 @@
     </div>
 
   </div>
+
+  <!-- js -->
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  <!-- js -->
+  {% assets
+    filters="jsmin",
+    output="packed-app.js",
+    "js/jQuery-Notify-bar/jquery.notifyBar.js",
+    "js/login.js",
+  %}
+    <script src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+
 </body>
 </html>
