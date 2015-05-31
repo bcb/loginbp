@@ -12,19 +12,16 @@ from flask_login import UserMixin, LoginManager, login_user, logout_user, \
     login_required, current_user
 from flask_principal import Principal, Identity, AnonymousIdentity, UserNeed, \
     RoleNeed, identity_loaded, identity_changed
-from jsonrpcclient import Server
 from jsonrpcclient.exceptions import ReceivedErrorResponse
 
 
 # Logging
 logger = logging.getLogger(__name__)
 # Instantiate the blueprint
-loginbp = Blueprint('loginbp', __name__, template_folder='templates', \
-    static_folder='static')
+loginbp = Blueprint('loginbp', __name__, static_folder='static',
+    template_folder='templates')
 # Flask-Login
 login_manager = LoginManager()
-# Users API for retrieving user data
-users_api = Server('http://localhost/api/users', auth=('admin', 'heiwah4i'))
 
 
 @loginbp.record_once
@@ -32,7 +29,7 @@ def on_load(state):
     """Perform blueprint actions that require the app variable"""
     # Flask-Login
     login_manager.init_app(state.app)
-    # Flask-Principal
+    # Flask-Principal - skip_static to not authenticate the static files
     Principal(state.app, skip_static=True)
     @identity_loaded.connect_via(state.app)
     def on_identity_loaded(_, identity): #pylint:disable=unused-variable
@@ -49,12 +46,6 @@ def on_load(state):
     # Webassets
     assets = state.app.assets
     assets.append_path(dirname(__file__)+'/static')
-    js_login = Bundle('js/jQuery-Notify-bar/jquery.notifyBar.js', \
-        'js/login.js', filters='jsmin', output='packed-login.js')
-    assets.register('js_login', js_login)
-    css_login = Bundle('js/jQuery-Notify-bar/css/jquery.notifyBar.css', \
-        'css/login.css', filters='cssmin', output='packed-login.css')
-    assets.register('css_login', css_login)
 
 
 class User(UserMixin):
@@ -73,7 +64,7 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
     """Flask-Login: Load user"""
-    user_dict = users_api.get_id(user_id, response=True)
+    user_dict = app.users_api.get_id(user_id, response=True)
     user = User(user_id, user_dict['username'], user_dict['roles'])
     return user
 
@@ -92,8 +83,8 @@ def login():
         password = request.form['password']
         # Attempt login via api
         try:
-            user_dict = users_api.login(username=username, password=password, \
-                response=True)
+            user_dict = app.users_api.login(username=username, \
+                password=password, response=True)
         except ReceivedErrorResponse as e:
             logger.warning('Invalid username or password')
             flash('Invalid username or password')
