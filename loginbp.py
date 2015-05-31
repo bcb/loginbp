@@ -64,7 +64,7 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
     """Flask-Login: Load user"""
-    user_dict = app.users_api.get_id(user_id, response=True)
+    user_dict = current_app.users_api.get_id(user_id, response=True)
     user = User(user_id, user_dict['username'], user_dict['roles'])
     return user
 
@@ -83,7 +83,7 @@ def login():
         password = request.form['password']
         # Attempt login via api
         try:
-            user_dict = app.users_api.login(username=username, \
+            user_dict = current_app.users_api.login(username=username, \
                 password=password, response=True)
         except ReceivedErrorResponse as e:
             logger.warning('Invalid username or password')
