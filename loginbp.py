@@ -65,7 +65,8 @@ class User(UserMixin):
 def load_user(user_id):
     """Flask-Login: Load user"""
     try:
-        user_dict = current_app.users_api.get_id(user_id, response=True)
+        user_dict = current_app.users_api.request(
+                'getById', user_id, response=True)
     except Exception:
         return None
     user = User(user_id, user_dict['username'], user_dict['roles'])
